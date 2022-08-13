@@ -1,0 +1,11 @@
+# TWRP properties
+ro.secure=0
+ro.adb.secure=0
+ro.debuggable=1
+ro.treble.enabled=true
+persist.sys.usb.config=mtp,adb
+sys.usb.controller=musb-hdrc
+ro.sys.usb.storage.type=mtp
+ro.sys.usb.mtp.whql.enable=0
+ro.sys.usb.bicr=no
+ro.vendor.mtk_emmc_support=1
