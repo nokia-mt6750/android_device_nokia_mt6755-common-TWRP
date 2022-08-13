@@ -14,6 +14,7 @@ $(call inherit-product, vendor/twrp/config/common.mk)
 
 PRODUCT_COPY_FILES += \
 	$(call find-copy-subdir-files,*,$(COMMON_PATH)/recovery/root,recovery/root) \
+	$(call find-copy-subdir-files,*,$(DEVICE_PATH)/recovery/root,recovery/root) \
 	$(DEVICE_PATH)/prebuilt/dtb.img:dtb.img
 
 # A/B support

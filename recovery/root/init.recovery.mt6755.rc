@@ -1,0 +1,109 @@
+on init
+	symlink /vendor/manifest.xml /system_root/system/manifest.xml
+
+on fs
+	install_keyring
+	mkdir /mnt/vendor/persist 0777 system system
+    setprop crypto.ready 1
+	start servicemanager
+	start hwservicemanager
+
+	setprop sys.usb.ffs.aio_compat 1
+
+	# distinguish USB shoulde connect or not, i.e. CDP vs SDP
+	write /sys/devices/platform/mt_usb/cmode 2
+
+on post-fs-data
+# Support A/B feature for boot region
+    symlink /dev/block/mmcblk0boot0 /dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/preloader_a
+    symlink /dev/block/mmcblk0boot1 /dev/block/platform/mtk-msdc.0/11230000.msdc0/by-name/preloader_b
+
+on property:ro.debuggable=1
+	write /sys/devices/platform/mt_usb/cmode 1
+
+service keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service.trustonic
+	user root
+	group root drmrpc
+    disabled
+    seclabel u:r:recovery:s0
+
+service gatekeeper-1-0 /sbin/android.hardware.gatekeeper@1.0-service
+	user root
+	group root
+    disabled
+    seclabel u:r:recovery:s0
+                                                                           
+service keymaster_attestation-1-1 /system/bin/vendor.mediatek.hardware.keymaster_attestation@1.1-service
+    interface vendor.mediatek.hardware.keymaster_attestation@1.1::IKeymasterDevice default
+    user root
+    group root
+    disabled
+    seclabel u:r:recovery:s0
+
+service keystore /system/bin/keystore /tmp/misc/keystore
+	user root
+	group keystore drmrpc readproc log
+    disabled
+    seclabel u:r:recovery:s0
+
+service tee-1-0 /system/bin/vendor.trustonic.tee@1.0-service
+    user root
+    group root
+    disabled
+    seclabel u:r:recovery:s0
+
+service teeregistry-1-0 /system/bin/vendor.trustonic.teeregistry@1.0-service
+    user root
+    group root
+    disabled
+    seclabel u:r:recovery:s0
+
+service keystore_auth /system/bin/keystore_auth
+    oneshot
+    user system
+    group root
+    disabled
+    seclabel u:r:recovery:s0
+
+service hwservicemanager /system/bin/hwservicemanager
+	user root
+	group root readproc
+    disabled
+    onrestart setprop hwservicemanager.ready false
+    seclabel u:r:recovery:s0
+
+service servicemanager /system/bin/servicemanager
+	user root
+	group root readproc
+    disabled
+    seclabel u:r:recovery:s0
+
+service mobicore /system/bin/mcDriverDaemon --P1 /mnt/vendor/persist/mcRegistry \
+	-r /vendor/app/mcRegistry/020f0000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/05120000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/020b0000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/05070000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/030b0000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/40188311faf343488db888ad39496f9a.drbin
+	user root
+	group root
+	disabled
+	seclabel u:r:recovery:s0
+
+on property:hwservicemanager.ready=true
+	start tee-1-0
+	start teeregistry-1-0
+	start mobicore
+	start gatekeeper-1-0
+	start keymaster_attestation-1-1
+    start keymaster-3-0
+
+on property:twrp.decrypt.done=true
+    stop mobicore
+    stop servicemanager
+    stop hwservicemanager
+    stop keymaster_attestation-1-1
+    stop keymaster-3-0
+    stop gatekeeper-1-0
+    stop tee-1-0
+    stop teeregistry-1-0
