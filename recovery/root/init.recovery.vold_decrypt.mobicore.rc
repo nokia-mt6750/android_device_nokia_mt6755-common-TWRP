@@ -1,0 +1,11 @@
+service mobicore /system/bin/mcDriverDaemon --P1 /mnt/vendor/persist/mcRegistry \
+	-r /vendor/app/mcRegistry/020f0000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/05120000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/020b0000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/05070000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/030b0000000000000000000000000000.drbin \
+	-r /vendor/app/mcRegistry/40188311faf343488db888ad39496f9a.drbin
+	user root
+	group root
+	disabled
+	seclabel u:r:recovery:s0
