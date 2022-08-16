@@ -1,5 +1,0 @@
-cc_library_shared {
-    name: "android.hardware.boot@1.0-mtkimpl",
-    defaults: ["android.hardware.boot@1.0-mtkimpl_defaults"],
-    recovery_available: true,
-}
