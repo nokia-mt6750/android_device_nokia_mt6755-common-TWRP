@@ -7,6 +7,15 @@ on init
 	symlink /system/lib64/hw/libMcTeeKeymaster.so /system/lib64/hw/keystore.mt6750.so
 	symlink /system/lib64/hw/kmsetkey.default.so /system/lib64/hw/kmsetkey.trustonic.so
 
+service boot-hal-1-0 /system/bin/android.hardware.boot@1.0-service
+    user root
+    group root
+    disabled
+    seclabel u:r:recovery:s0
+
+on property:hwservicemanager.ready=true
+	start boot-hal-1-0
+
 on fs
 	setprop sys.usb.ffs.aio_compat 1
 	export ANDROID_ROOT /system_root
