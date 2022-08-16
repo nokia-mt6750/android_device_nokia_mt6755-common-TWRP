@@ -47,6 +47,3 @@
 
 ## Battery Level
 Often shows 50%. Sometimes shows a real charge. I do not know why it is so.
-
-# Decrypt /data
-Works fine, but the user data located in the /date/media/ folder instead /data/media/0 ([My Github issue](https://github.com/TeamWin/android_bootable_recovery/issues/255))
